@@ -4,6 +4,7 @@ import sys
 import os
 script_dir = os.path.dirname(__file__)
 
+# Initialize pygame
 pygame.init()
 
 # Screen setup
@@ -15,23 +16,24 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Christmas Game")
 
 # Load images
-background_img = pygame.image.load(f"{script_dir}\\pictures\\background.png")
+script_dir = os.path.dirname(__file__)
+background_img = pygame.image.load(f"{script_dir}/pictures/background.png")
 background_img = pygame.transform.scale(background_img, (WIDTH, HEIGHT))
 
-tree_img = pygame.image.load(f"{script_dir}\\pictures\\christmastree.png")
+tree_img = pygame.image.load(f"{script_dir}/pictures/christmastree.png")
 tree_img = pygame.transform.scale(tree_img, (300, 450))
 
-basket_img = pygame.image.load(f"{script_dir}\\pictures\\basket.png")
+basket_img = pygame.image.load(f"{script_dir}/pictures/basket.png")
 basket_img = pygame.transform.scale(basket_img, (100, 50))
 
 ornament_images = [
-    pygame.image.load(f"{script_dir}\\pictures\\ornament1.png"),
-    pygame.image.load(f"{script_dir}\\pictures\\ornament2.png"),
-    pygame.image.load(f"{script_dir}\\pictures\\ornament3.png")
+    pygame.image.load(f"{script_dir}/pictures/ornament1.png"),
+    pygame.image.load(f"{script_dir}/pictures/ornament2.png"),
+    pygame.image.load(f"{script_dir}/pictures/ornament3.png")
 ]
 ornament_images = [pygame.transform.scale(img, (40, 40)) for img in ornament_images]
 
-bomb_img = pygame.image.load(f"{script_dir}\\pictures\\bomb.png")
+bomb_img = pygame.image.load(f"{script_dir}/pictures/bomb.png")
 bomb_img = pygame.transform.scale(bomb_img, (40, 40))
 
 # Game variables
@@ -58,7 +60,8 @@ TREE_DECORATION_AREA = {
     'y_min': tree_y + 100,
     'y_max': tree_y + 400
 }
-# Add an ornament
+
+# Functions
 def add_ornament():
     while True:
         x = random.randint(50, WIDTH - 50)
@@ -66,31 +69,48 @@ def add_ornament():
             break
     image = random.choice(ornament_images)
     ornaments.append({'x': x, 'y': 0, 'image': image})
-    
-'''def show_intro():
+
+def add_bomb():
+    x = random.randint(50, WIDTH - 50)
+    bombs.append({'x': x, 'y': 0})
+
+def add_to_tree_decoration():
+    x = random.randint(TREE_DECORATION_AREA['x_min'], TREE_DECORATION_AREA['x_max'])
+    y = random.randint(TREE_DECORATION_AREA['y_min'], TREE_DECORATION_AREA['y_max'])
+    tree_decorations.append((x, y))
+
+def draw_snowflakes():
+    for snowflake in snowflakes:
+        pygame.draw.circle(screen, WHITE, (snowflake['x'], snowflake['y']), 2)
+
+def update_snowflakes():
+    for snowflake in snowflakes:
+        snowflake['y'] = (snowflake['y'] + 1) % HEIGHT
+        if snowflake['y'] == 0:
+            snowflake['x'] = random.randint(0, WIDTH)
+
+def draw_tree_decorations():
+    for decoration in tree_decorations:
+        screen.blit(random.choice(ornament_images), decoration)
+
+def show_intro():
     intro_running = True
     while intro_running:
-        # Fill the screen with a background color or image
         screen.blit(background_img, (0, 0))
-
-        # Display the instructions
         intro_text1 = font.render("Welcome to the Christmas Game!", True, BLUE)
         intro_text2 = font.render("Catch ornaments in the basket to decorate the tree.", True, BLUE)
         intro_text3 = font.render("Avoid bombs or you lose the game.", True, RED)
         intro_text4 = font.render("Press LEFT and RIGHT to move.", True, BLUE)
         intro_text5 = font.render("Press SPACE to start.", True, BLUE)
 
-        # Draw text on the screen
         screen.blit(intro_text1, (WIDTH // 2 - intro_text1.get_width() // 2, HEIGHT // 2 - 100))
         screen.blit(intro_text2, (WIDTH // 2 - intro_text2.get_width() // 2, HEIGHT // 2 - 50))
         screen.blit(intro_text3, (WIDTH // 2 - intro_text3.get_width() // 2, HEIGHT // 2))
         screen.blit(intro_text4, (WIDTH // 2 - intro_text4.get_width() // 2, HEIGHT // 2 + 50))
         screen.blit(intro_text5, (WIDTH // 2 - intro_text5.get_width() // 2, HEIGHT // 2 + 100))
 
-        # Update the display
         pygame.display.flip()
 
-        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -99,74 +119,24 @@ def add_ornament():
                 if event.key == pygame.K_SPACE:
                     intro_running = False
 
-# Main game loop
+# Main game logic
 clock = pygame.time.Clock()
 running = True
-show_intro()  # Show intro screen
+
+show_intro()
 add_ornament()
 
 while running:
-    # Game logic here
-    pass'''
-
-
-# Add the bomb, we bring the booooom
-def add_bomb():
-    x = random.randint(50, WIDTH - 50)
-    bombs.append({'x': x, 'y': 0})
-
-# Add to tree decorations
-def add_to_tree_decoration():
-    x = random.randint(TREE_DECORATION_AREA['x_min'], TREE_DECORATION_AREA['x_max'])
-    y = random.randint(TREE_DECORATION_AREA['y_min'], TREE_DECORATION_AREA['y_max'])
-    tree_decorations.append((x, y))
-
-# Draw snowflakes
-def draw_snowflakes():
-    for snowflake in snowflakes:
-        pygame.draw.circle(screen, WHITE, (snowflake['x'], snowflake['y']), 2)
-
-# Update snowflakes
-def update_snowflakes():
-    for snowflake in snowflakes:
-        snowflake['y'] = (snowflake['y'] + 1) % HEIGHT
-        if snowflake['y'] == 0:
-            snowflake['x'] = random.randint(0, WIDTH)
-
-# Draw tree decorations
-def draw_tree_decorations():
-    for decoration in tree_decorations:
-        screen.blit(random.choice(ornament_images), decoration)
-
-# Main game loop
-clock = pygame.time.Clock()
-running = True
-add_ornament()
-
-while running:
-    # Clear screen and draw background
-    screen.blit(background_img, (0, 0))
-
-    # Draw snowflakes
-    draw_snowflakes()
-    update_snowflakes()
-
-    # Draw Christmas tree
-    screen.blit(tree_img, (tree_x, tree_y))
-
-    # Event handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # Basket movement
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT] and basket_x > 0:
         basket_x -= basket_speed
     if keys[pygame.K_RIGHT] and basket_x < WIDTH - 100:
         basket_x += basket_speed
 
-    # Update ornaments
     for ornament in ornaments[:]:
         ornament['y'] += ornament_speed
         if ornament['y'] > HEIGHT:
@@ -177,57 +147,49 @@ while running:
             score += 1
             add_to_tree_decoration()
 
-    # Update da bombs
     for bomb in bombs[:]:
         bomb['y'] += bomb_speed
         if bomb['y'] > HEIGHT:
             bombs.remove(bomb)
         elif basket_x < bomb['x'] < basket_x + 100 and basket_y < bomb['y'] < basket_y + 50:
-            bombs.remove(bomb)
-            score -= 100000
             running = False
 
-    # Add more ornaments and bombs
     if random.randint(1, 50 - level) == 1:
         add_ornament()
     if random.randint(1, 100 - level) == 1:
         add_bomb()
 
-    # Draw basket
-    screen.blit(basket_img, (basket_x, basket_y))
-
-    # Draw ornaments
-    for ornament in ornaments:
-        screen.blit(ornament['image'], (ornament['x'], ornament['y']))
-
-    # Draw bombs
-    for bomb in bombs:
-        screen.blit(bomb_img, (bomb['x'], bomb['y']))
-
-    # Draw decorations on the tree
-    draw_tree_decorations()
-
-    # Update level based on score
     if score // 10 + 1 > level:
         level += 1
         ornament_speed += 1
         bomb_speed += 1
 
-    # Draw score and level
+    screen.blit(background_img, (0, 0))
+    draw_snowflakes()
+    update_snowflakes()
+    screen.blit(tree_img, (tree_x, tree_y))
+    screen.blit(basket_img, (basket_x, basket_y))
+
+    for ornament in ornaments:
+        screen.blit(ornament['image'], (ornament['x'], ornament['y']))
+
+    for bomb in bombs:
+        screen.blit(bomb_img, (bomb['x'], bomb['y']))
+
+    draw_tree_decorations()
+
     score_text = font.render(f"Score: {score}", True, BLUE)
     level_text = font.render(f"Level: {level}", True, BLUE)
     screen.blit(score_text, (10, 10))
     screen.blit(level_text, (10, 50))
 
-    # Check if you win 
     if score >= 10:
         win_text = font.render("You Win! Press Q to quit.", True, BLUE)
         screen.blit(win_text, (WIDTH // 2 - 150, HEIGHT // 2))
         pygame.display.flip()
-        pygame.time.wait(2000)
+        pygame.time.wait(3000)
         running = False
 
-    # Update el display
     pygame.display.flip()
     clock.tick(30)
 
