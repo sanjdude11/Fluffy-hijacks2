@@ -15,23 +15,23 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Christmas Game")
 
 # Load images
-background_img = pygame.image.load(r"C:\Users\sanja\OneDrive\Desktop\code\VSWhere\background.png")
+background_img = pygame.image.load(f"{script_dir}\\pictures\\background.png")
 background_img = pygame.transform.scale(background_img, (WIDTH, HEIGHT))
 
-tree_img = pygame.image.load(r"C:\Users\sanja\My project\Library\PackageCache\com.unity.ide.visualstudio@2.0.22\Editor\VSWhere\christmastree.png")
+tree_img = pygame.image.load(f"{script_dir}\\pictures\\christmastree.png")
 tree_img = pygame.transform.scale(tree_img, (300, 450))
 
-basket_img = pygame.image.load(r"C:\Users\sanja\My project\Library\PackageCache\com.unity.ide.visualstudio@2.0.22\Editor\VSWhere\basket.png")
+basket_img = pygame.image.load(f"{script_dir}\\pictures\\basket.png")
 basket_img = pygame.transform.scale(basket_img, (100, 50))
 
 ornament_images = [
-    pygame.image.load(r"C:\Users\sanja\My project\Library\PackageCache\com.unity.ide.visualstudio@2.0.22\Editor\VSWhere\ornament1.png"),
-    pygame.image.load(r"C:\Users\sanja\My project\Library\PackageCache\com.unity.ide.visualstudio@2.0.22\Editor\VSWhere\ornament2.png"),
-    pygame.image.load(r"C:\Users\sanja\My project\Library\PackageCache\com.unity.ide.visualstudio@2.0.22\Editor\VSWhere\ornament3.png")
+    pygame.image.load(f"{script_dir}\\pictures\\ornament1.png"),
+    pygame.image.load(f"{script_dir}\\pictures\\ornament2.png"),
+    pygame.image.load(f"{script_dir}\\pictures\\ornament3.png")
 ]
 ornament_images = [pygame.transform.scale(img, (40, 40)) for img in ornament_images]
 
-bomb_img = pygame.image.load(r"C:\Users\sanja\My project\Library\PackageCache\com.unity.ide.visualstudio@2.0.22\Editor\VSWhere\bomb.png")
+bomb_img = pygame.image.load(f"{script_dir}\\pictures\\bomb.png")
 bomb_img = pygame.transform.scale(bomb_img, (40, 40))
 
 # Game variables
@@ -67,7 +67,47 @@ def add_ornament():
     image = random.choice(ornament_images)
     ornaments.append({'x': x, 'y': 0, 'image': image})
     
+'''def show_intro():
+    intro_running = True
+    while intro_running:
+        # Fill the screen with a background color or image
+        screen.blit(background_img, (0, 0))
 
+        # Display the instructions
+        intro_text1 = font.render("Welcome to the Christmas Game!", True, BLUE)
+        intro_text2 = font.render("Catch ornaments in the basket to decorate the tree.", True, BLUE)
+        intro_text3 = font.render("Avoid bombs or you lose the game.", True, RED)
+        intro_text4 = font.render("Press LEFT and RIGHT to move.", True, BLUE)
+        intro_text5 = font.render("Press SPACE to start.", True, BLUE)
+
+        # Draw text on the screen
+        screen.blit(intro_text1, (WIDTH // 2 - intro_text1.get_width() // 2, HEIGHT // 2 - 100))
+        screen.blit(intro_text2, (WIDTH // 2 - intro_text2.get_width() // 2, HEIGHT // 2 - 50))
+        screen.blit(intro_text3, (WIDTH // 2 - intro_text3.get_width() // 2, HEIGHT // 2))
+        screen.blit(intro_text4, (WIDTH // 2 - intro_text4.get_width() // 2, HEIGHT // 2 + 50))
+        screen.blit(intro_text5, (WIDTH // 2 - intro_text5.get_width() // 2, HEIGHT // 2 + 100))
+
+        # Update the display
+        pygame.display.flip()
+
+        # Event handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    intro_running = False
+
+# Main game loop
+clock = pygame.time.Clock()
+running = True
+show_intro()  # Show intro screen
+add_ornament()
+
+while running:
+    # Game logic here
+    pass'''
 
 
 # Add the bomb, we bring the booooom
