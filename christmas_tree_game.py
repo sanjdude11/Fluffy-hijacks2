@@ -9,6 +9,7 @@ pygame.init()
 
 # Screen setup
 WIDTH, HEIGHT = 1000, 600
+GREEN = (0, 255, 0)  
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
@@ -56,8 +57,8 @@ font = pygame.font.Font(None, 36)
 # Tree decoration area
 TREE_DECORATION_AREA = {
     'x_min': tree_x + 50,
-    'x_max': tree_x + 250,
-    'y_min': tree_y + 100,
+    'x_max': tree_x + 210,
+    'y_min': tree_y + 50,
     'y_max': tree_y + 400
 }
 
@@ -100,14 +101,16 @@ def show_intro():
         intro_text1 = font.render("Welcome to the Christmas Game!", True, BLUE)
         intro_text2 = font.render("Catch ornaments in the basket to decorate the tree.", True, BLUE)
         intro_text3 = font.render("Avoid bombs or you lose the game.", True, RED)
-        intro_text4 = font.render("Press LEFT and RIGHT to move.", True, BLUE)
-        intro_text5 = font.render("Press SPACE to start.", True, BLUE)
+        intro_text4 = font.render("if you fail to catch an ornament you lose a point", True, RED)
+        intro_text5 = font.render("Press LEFT and RIGHT to move.", True, BLUE)
+        intro_text6 = font.render("Press SPACE to start.", True, BLUE)
 
         screen.blit(intro_text1, (WIDTH // 2 - intro_text1.get_width() // 2, HEIGHT // 2 - 100))
         screen.blit(intro_text2, (WIDTH // 2 - intro_text2.get_width() // 2, HEIGHT // 2 - 50))
         screen.blit(intro_text3, (WIDTH // 2 - intro_text3.get_width() // 2, HEIGHT // 2))
         screen.blit(intro_text4, (WIDTH // 2 - intro_text4.get_width() // 2, HEIGHT // 2 + 50))
         screen.blit(intro_text5, (WIDTH // 2 - intro_text5.get_width() // 2, HEIGHT // 2 + 100))
+        screen.blit(intro_text6, (WIDTH // 2 - intro_text6.get_width() // 2, HEIGHT // 2 + 150))
 
         pygame.display.flip()
 
