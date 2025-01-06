@@ -65,7 +65,7 @@ TREE_DECORATION_AREA = {
 # Function to add a new ornament
 def add_ornament():
     while True:
-        x = random.randint(50, WIDTH - 50)  # Generate a random x-coordinate
+        x = random.randint(500, WIDTH - 50)  # Generate a random x-coordinate
         if not (tree_x <= x <= tree_x + 300):  # Avoid spawning ornaments near the tree
             break
     image = random.choice(ornament_images)  # Choose a random ornament image
@@ -198,6 +198,13 @@ while running:
     # Check for win condition
     if score >= 10:
         win_text = font.render("You Win! Press Q to quit.", True, BLUE)
+        screen.blit(win_text, (WIDTH // 2 - 150, HEIGHT // 2))
+        pygame.display.flip()
+        pygame.time.wait(3000)
+        running = False
+
+    elif score <= -3:
+        win_text = font.render("Your score was too small you lose.", True, BLUE)
         screen.blit(win_text, (WIDTH // 2 - 150, HEIGHT // 2))
         pygame.display.flip()
         pygame.time.wait(3000)
