@@ -93,8 +93,10 @@ def is_within_tree(x, y):
 # Function to add a new ornament
 def add_ornament():
     while True:
-        x = random.randint(50, WIDTH - 50)  # Generate a random x-coordinate
-        if not (tree_x <= x <= tree_x + 300):  # Avoid spawning ornaments near the tree
+        x = random.randint(50, WIDTH - 50)
+        y = 0  # Start ornaments at the top of the screen
+        if not (TREE_DECORATION_AREA['x_min'] <= x <= TREE_DECORATION_AREA['x_max']):
+            ornaments.append({'x': x, 'y': y, 'image': random.choice(ornament_images)})
             break
 
 
