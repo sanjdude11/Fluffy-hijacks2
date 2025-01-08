@@ -21,7 +21,11 @@ background_img = pygame.image.load(f"{script_dir}/pictures/background.png")  # L
 background_img = pygame.transform.scale(background_img, (WIDTH, HEIGHT))  # Scale the background to fit the screen
 
 tree_img = pygame.image.load(f"{script_dir}/pictures/christmastree.png")  # Load the Christmas tree image
-tree_img = pygame.transform.scale(tree_img, (300, 450))  # Scale the tree image
+# Scale the tree to make it taller and wider
+tree_img = pygame.transform.scale(tree_img, (410, 900))  # Adjust dimensions for width and height
+
+# Position the tree so the top half is off-screen
+tree_rect = tree_img.get_rect(midbottom=(WIDTH // 2, HEIGHT + 200))  # Adjust the vertical position
 
 basket_img = pygame.image.load(f"{script_dir}/pictures/basket.png")  # Load the basket image
 basket_img = pygame.transform.scale(basket_img, (100, 50))  # Scale the basket image
@@ -37,12 +41,18 @@ ornament_images = [pygame.transform.scale(img, (40, 40)) for img in ornament_ima
 bomb_img = pygame.image.load(f"{script_dir}/pictures/bomb.png")  # Load the bomb image
 bomb_img = pygame.transform.scale(bomb_img, (40, 40))  # Scale the bomb image
 
+# Load power-up image
+power_up_img = pygame.image.load(f"{script_dir}/pictures/powerup.png")  # Load the power-up image
+power_up_img = pygame.transform.scale(power_up_img, (40, 40))  # Scale the power-up image
+
+
 # Game variables
 basket_x = WIDTH // 2  # Initial horizontal position of the basket
 basket_y = HEIGHT - 100  # Vertical position of the basket
 basket_speed = 8  # Speed of the basket
 ornaments = []  # List to store ornaments
 bombs = []  # List to store bombs
+power_ups = []  # List to store power-ups
 ornament_speed = 5  # Speed of falling ornaments
 bomb_speed = 6  # Speed of falling bombs
 score = 0  # Initial score
@@ -51,36 +61,66 @@ level = 1  # Initial level
 tree_x, tree_y = 100, HEIGHT - 500  # Position of the Christmas tree
 snowflakes = [{'x': random.randint(0, WIDTH), 'y': random.randint(0, HEIGHT)} for _ in range(100)]  # Generate snowflakes
 
+# Power-up effect variables
+power_up_active = False  # Whether a power-up is active
+power_up_timer = 0  # Timer for power-up duration
+
 # Font setup
 font = pygame.font.Font(None, 36)  # Font for displaying text
 
 # Define tree decoration area
 TREE_DECORATION_AREA = {
-    'x_min': tree_x + 50,  # Minimum x-coordinate for tree decorations
-    'x_max': tree_x + 210,  # Maximum x-coordinate for tree decorations
-    'y_min': tree_y + 40,  # Minimum y-coordinate for tree decorations
-    'y_max': tree_y + 400  # Maximum y-coordinate for tree decorations
+    'x_min': tree_x + 100,  # Minimum x-coordinate for tree decorations
+    'x_max': tree_x + 310,  # Maximum x-coordinate for tree decorations
+    'y_min': tree_y + 50,  # Minimum y-coordinate for tree decorations
+    'y_max': tree_y + 500  # Maximum y-coordinate for tree decorations
 }
+
+def is_within_tree(x, y):
+    """
+    Check if the (x, y) position is within the triangular area of the tree.
+    """
+    tree_center_x = tree_x + 205  # Approximate center of the tree
+    tree_width = 410             # Scaled width of the tree
+    tree_height = 900            # Scaled height of the tree
+
+    # Calculate triangle boundaries at this y-coordinate
+    left_boundary = tree_center_x - ((tree_width / 2) * ((y - tree_y) / tree_height))
+    right_boundary = tree_center_x + ((tree_width / 2) * ((y - tree_y) / tree_height))
+
+    return left_boundary <= x <= right_boundary
 
 # Function to add a new ornament
 def add_ornament():
     while True:
-        x = random.randint(50, WIDTH - 50)  # Generate a random x-coordinate
-        if not (tree_x <= x <= tree_x + 300):  # Avoid spawning ornaments near the tree
+        x = random.randint(50, WIDTH - 50)
+        y = 0  # Start ornaments at the top of the screen
+        if not (TREE_DECORATION_AREA['x_min'] <= x <= TREE_DECORATION_AREA['x_max']):
+            ornaments.append({'x': x, 'y': y, 'image': random.choice(ornament_images)})
             break
-    image = random.choice(ornament_images)  # Choose a random ornament image
-    ornaments.append({'x': x, 'y': 0, 'image': image})  # Add the ornament to the list
+
 
 # Function to add a bomb
 def add_bomb():
+    while True:
+        x = random.randint(50, WIDTH - 50)
+        if not (TREE_DECORATION_AREA['x_min'] <= x <= TREE_DECORATION_AREA['x_max']):
+            bombs.append({'x': x, 'y': 0})
+            break
+
+# Function to add a power-up
+def add_power_up():
     x = random.randint(50, WIDTH - 50)  # Generate a random x-coordinate
-    bombs.append({'x': x, 'y': 0})  # Add the bomb to the list
+    power_ups.append({'x': x, 'y': 0})  # Add the power-up to the list
 
 # Function to add an ornament to the tree decorations
 def add_to_tree_decoration():
-    x = random.randint(TREE_DECORATION_AREA['x_min'], TREE_DECORATION_AREA['x_max'])  # Random x-coordinate within the tree area
-    y = random.randint(TREE_DECORATION_AREA['y_min'], TREE_DECORATION_AREA['y_max'])  # Random y-coordinate within the tree area
-    tree_decorations.append((x, y))  # Add the position to the tree decorations
+    while True:
+        x = random.randint(TREE_DECORATION_AREA['x_min'], TREE_DECORATION_AREA['x_max'])
+        y = random.randint(TREE_DECORATION_AREA['y_min'], TREE_DECORATION_AREA['y_max'])
+        if is_within_tree(x, y):
+            tree_decorations.append((x, y))
+            break
 
 # Function to draw snowflakes
 def draw_snowflakes():
@@ -138,6 +178,7 @@ running = True  # Flag to keep the game running
 show_intro()  # Show the intro screen
 add_ornament()  # Add the first ornament
 
+# Modify the game loop for power-up logic
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:  # Quit the game
@@ -169,12 +210,34 @@ while running:
         elif basket_x < bomb['x'] < basket_x + 100 and basket_y < bomb['y'] < basket_y + 50:  # Hit by bomb
             running = False
 
-    # Randomly add ornaments and bombs
+    # Update positions of power-ups and check collisions
+    for power_up in power_ups[:]:
+        power_up['y'] += ornament_speed
+        if power_up['y'] > HEIGHT:  # Missed power-up
+            power_ups.remove(power_up)
+        elif basket_x < power_up['x'] < basket_x + 100 and basket_y < power_up['y'] < basket_y + 50:  # Caught power-up
+            power_ups.remove(power_up)
+            power_up_active = True
+            power_up_timer = pygame.time.get_ticks()  # Start the power-up timer
+
+    # Handle power-up effects
+    if power_up_active:
+        current_time = pygame.time.get_ticks()
+        if current_time - power_up_timer < 5000:  # Power-up lasts for 5 seconds
+            basket_speed = 12  # Increase basket speed
+            ornament_speed = 3  # Slow down ornaments
+        else:
+            power_up_active = False
+            basket_speed = 8  # Reset basket speed
+            ornament_speed = 5  # Reset ornament speed
+
+    # Randomly add ornaments, bombs, and power-ups
     if random.randint(1, 50 - level) == 1:
         add_ornament()
     if random.randint(1, 100 - level) == 1:
         add_bomb()
-
+    if random.randint(1, 200 - level) == 1:
+        add_power_up()
 
     # Draw game elements
     screen.blit(background_img, (0, 0))  # Draw the background
@@ -189,9 +252,12 @@ while running:
     for bomb in bombs:
         screen.blit(bomb_img, (bomb['x'], bomb['y']))  # Draw bombs
 
+    for power_up in power_ups:
+        screen.blit(power_up_img, (power_up['x'], power_up['y']))  # Draw power-ups
+
     draw_tree_decorations()  # Draw decorations on the tree
 
-    # Display score and level
+    # Display score
     score_text = font.render(f"Score: {score}", True, BLUE)
     screen.blit(score_text, (10, 10))
 
@@ -200,7 +266,7 @@ while running:
         win_text = font.render("You Win! Press Q to quit.", True, BLUE)
         screen.blit(win_text, (WIDTH // 2 - 150, HEIGHT // 2))
         pygame.display.flip()
-        pygame.time.wait(3000)
+        pygame.time.wait(5000)
         running = False
 
     pygame.display.flip()  # Update the display
@@ -208,3 +274,6 @@ while running:
 
 pygame.quit()  # Quit pygame
 sys.exit()  # Exit the program
+
+# as a note to whoever is reading this, i loved this challenge. I had never used pygame before this and now I love it.
+# This was really fun and i hope you enjoy my game. It is not perfect but i loved making it and I hope you like it too. 
